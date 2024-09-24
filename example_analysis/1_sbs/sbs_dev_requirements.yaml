@@ -13,7 +13,9 @@ dependencies:
   - conda-forge::nd2reader=
   - conda-forge::pytables=
   - conda-forge::mahotas=
+  - conda-forge::seaborn=
+  - conda-forge::tdqm=
+  - conda-forge::microfilm=
 
   # - pip:
   #     - -e . ADD PATH THAT CONTAINS OPS DIRECTORY HERE!
-
