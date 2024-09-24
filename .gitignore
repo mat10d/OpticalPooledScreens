@@ -8,3 +8,6 @@ ops_lasagna.egg-info/
 venv/
 venv_ops/
 venv_ops_new/
+
+# Google IDX environment specifications
+.idx/
