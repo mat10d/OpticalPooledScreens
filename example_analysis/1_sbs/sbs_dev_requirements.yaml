@@ -5,20 +5,20 @@ channels:
 dependencies:
   - conda-forge::python=3.11
   - conda-forge::pip=24.2
-  - conda-forge::jupyter_core=
-  - conda-forge::numpy=
-  - conda-forge::pandas=
-  - conda-forge::scikit-image=
-  - conda-forge::joblib=
-  - conda-forge::natsort=
-  - conda-forge::nd2reader=
-  - conda-forge::pytables=
-  - conda-forge::mahotas=
-  - conda-forge::seaborn=
-  - conda-forge::tdqm=
-  - conda-forge::microfilm=
-  - conda-forge::cellpose=
-  - fastai::opencv-python-headless=
+  - conda-forge::jupyter_core
+  - conda-forge::numpy
+  - conda-forge::pandas
+  - conda-forge::scikit-image
+  - conda-forge::joblib
+  - conda-forge::natsort
+  - conda-forge::nd2reader
+  - conda-forge::pytables
+  - conda-forge::mahotas
+  - conda-forge::seaborn
+  - conda-forge::tdqm
+  - conda-forge::microfilm
+  - conda-forge::cellpose
+  - fastai::opencv-python-headless
 
   # - pip:
   #     - -e . ADD PATH THAT CONTAINS OPS DIRECTORY HERE!
