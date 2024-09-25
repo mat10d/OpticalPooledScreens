@@ -1,6 +1,7 @@
 name: sbs_dev
 channels:
   - conda-forge
+  - fastai
 dependencies:
   - conda-forge::python=3.11
   - conda-forge::pip=24.2
@@ -16,6 +17,8 @@ dependencies:
   - conda-forge::seaborn=
   - conda-forge::tdqm=
   - conda-forge::microfilm=
+  - conda-forge::cellpose=
+  - fastai::opencv-python-headless=
 
   # - pip:
   #     - -e . ADD PATH THAT CONTAINS OPS DIRECTORY HERE!
