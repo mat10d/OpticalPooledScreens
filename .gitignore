@@ -13,4 +13,4 @@ venv_ops_new/
 .idx/
 
 # Outputs that are too large for GitHub
-example_analysis/1_sbs/tile_based/output
+example_analysis/1_sbs/*/output
