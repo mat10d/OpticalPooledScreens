@@ -80,8 +80,8 @@ def get_file(f):
 # Defines the final output files for the pipeline, ensuring generation of files for each combination of well and tile
 rule all:
     input:
-        expand(f'{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.csv', well=WELLS, tile=TILES),
-        expand(f'{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.sbs_info.csv', well=WELLS, tile=TILES),
+        expand(f'{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.csv', well=WELLS, tile=TILES),
+        expand(f'{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.sbs_info.csv', well=WELLS, tile=TILES),
         
 # Aligns images from each sequencing round 
 rule align:
@@ -169,7 +169,7 @@ rule illumination_correction:
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.aligned.tif",
         'input/10X_c{cycle}-SBS-{cycle}_{{well}}.sbs.illumination_correction.tif'.format(cycle=SBS_CYCLES[SEGMENTATION_CYCLE]),
     output:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.illumination_correction.tif",
+        temp(f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.illumination_correction.tif")
     run:
         aligned = read(input[0])
         aligned_0 = aligned[0]
@@ -185,8 +185,8 @@ rule segment:
     input:
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.illumination_correction.tif",
     output:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.nuclei.tif",
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.tif",
+        temp(f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.nuclei.tif"),
+        temp(f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.tif")
     run:
         Snake_sbs.segment_cellpose(
             data=input[0],
@@ -205,7 +205,7 @@ rule extract_bases:
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.maxed.tif",
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.tif",
     output:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.bases.csv",
+        temp(f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.bases.csv")
     run:
         Snake_sbs.extract_bases(
             peaks=input[0], 
@@ -223,7 +223,7 @@ rule call_reads:
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.bases.csv",
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.peaks.tif",
     output:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv",
+        temp(f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv")
     run:
         Snake_sbs.call_reads(
             df_bases=input[0], 
@@ -236,7 +236,7 @@ rule call_cells:
     input:
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv",
     output:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.csv",
+        f"{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.csv",
     run:
         df_design = pd.read_csv(DF_DESIGN_PATH)
         df_pool = df_design.query("dialout==[0,1]").drop_duplicates("sgRNA")
@@ -253,7 +253,7 @@ rule sbs_cell_info:
     input: 
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.nuclei.tif",
     output:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.sbs_info.csv",
+        f"{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.sbs_info.csv",
     run:
         Snake_sbs.extract_phenotype_minimal(
             data_phenotype=input[0], 
