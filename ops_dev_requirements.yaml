@@ -19,6 +19,7 @@ dependencies:
   - conda-forge::microfilm=0.2.1
   - conda-forge::cellpose=3.0.11
   - conda-forge::graphviz=12.0.0
+  - conda-forge::coincbc=2.10.12
   - bioconda::snakemake=8.20.5
   - pip:
       - -e .
