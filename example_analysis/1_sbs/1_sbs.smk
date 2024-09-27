@@ -6,12 +6,13 @@ from joblib import Parallel, delayed
 import snakemake
 
 from ops.sbs_smk import Snake_sbs
-from ops.imports import *
+from ops.imports import read
 import ops.io
 
 # Output directory for notebook results
 INPUT_FILES_DIR = "input"
 OUTPUT_FILES_DIR = "output"
+PROCESSING_FILES_DIR = "processing"
 
 # Define lists of cycles
 SBS_CYCLES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -79,24 +80,25 @@ def get_file(f):
 # Defines the final output files for the pipeline, ensuring generation of files for each combination of well and tile
 rule all:
     input:
-        expand('process_sbs/images/10X_{well}_Tile-{tile}.aligned.tif', well=WELLS, tile=TILES),
+        expand(f'{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.aligned.tif', well=WELLS, tile=TILES),
+        expand(f'{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.log.tif', well=WELLS, tile=TILES),
         
 # Aligns images from each sequencing round 
 rule align:
     input:
         [PREPROCESS_PATTERN.format(input_dir=INPUT_FILES_DIR, cycle=cycle) for cycle in SBS_CYCLES]
     output:
-        'process_sbs/images/10X_{well}_Tile-{tile}.aligned.tif'
+        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.aligned.tif"
     run:
         # Read each cycle image into a list
-        data = [ops.io.read(f) for f in input]
+        data = [read(f) for f in input]
         
         # Print number of data points for verification
         print(f"Number of images loaded: {len(data)}")
 
         # Call the alignment function from Snake_sbs
         Snake_sbs.align_SBS(
-            output=output[0], 
+            output=output, 
             data=data, 
             method='SBS_mean', 
             cycle_files=CYCLE_FILES, 
@@ -107,21 +109,20 @@ rule align:
             luts=LUTS
         )
 
-
-# # Applies Laplacian-of-Gaussian filter to all channels
-# rule transform_LoG:
-#     input:
-#         'process_sbs/images/10X_{well}_Tile-{tile}.aligned.tif'
-#     output:
-#         temp('process_sbs/images/10X_{well}_Tile-{tile}.log.tif')
-#     run:
-#         Snake_sbs.transform_log(
-#             output=output, 
-#             data=input[0], 
-#             skip_index=0,
-#             display_ranges=DISPLAY_RANGES, 
-#             luts=LUTS
-#         )
+# Applies Laplacian-of-Gaussian filter to all channels
+rule transform_LoG:
+    input:
+        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.aligned.tif"
+    output:
+        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.log.tif"
+    run:
+        Snake_sbs.transform_log(
+            data=input, 
+            output=output, 
+            skip_index=0,
+            display_ranges=DISPLAY_RANGES, 
+            luts=LUTS
+        )
 
 # # Computes standard deviation of SBS reads across cycles
 # rule compute_std:
