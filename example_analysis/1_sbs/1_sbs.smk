@@ -80,6 +80,7 @@ def get_file(f):
 # Defines the final output files for the pipeline, ensuring generation of files for each combination of well and tile
 rule all:
     input:
+        expand(f'{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv', well=WELLS, tile=TILES),
         expand(f'{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.csv', well=WELLS, tile=TILES),
         expand(f'{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.sbs_info.csv', well=WELLS, tile=TILES),
         
@@ -223,7 +224,7 @@ rule call_reads:
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.bases.csv",
         f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.peaks.tif",
     output:
-        temp(f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv")
+        f"{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv",
     run:
         Snake_sbs.call_reads(
             df_bases=input[0], 
@@ -234,7 +235,7 @@ rule call_reads:
 # Call cells
 rule call_cells:
     input:
-        f"{PROCESSING_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv",
+        f"{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.reads.csv",
     output:
         f"{OUTPUT_FILES_DIR}/10X_{{well}}_Tile-{{tile}}.cells.csv",
     run:

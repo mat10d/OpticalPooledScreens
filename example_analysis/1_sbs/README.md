@@ -3,6 +3,9 @@
 This module provides a workflow for processing Sequencing By Synthesis (SBS) microscopy files, generating metadata, and performing read calling and cell assignment.
 It is designed to handle SBS acquisitions and integrate with the previous preprocessing step.
 
+This workflow follows the Snakemake rule graph below:
+![1_sbs_rulegraph](1_sbs_rulegraph.png)
+
 ## Contents
 
 1. `1_sbs_smk_test.ipynb`: Python script for ensuring correct SBS image loading and processing at the tile level.
@@ -28,7 +31,7 @@ We use the following commands to generate the rulegraph (above) and run the work
 conda activate ops_dev
 
 # generate rulegraph
-snakemake --snakefile 1_sbs.smk --rulegraph | dot -Gdpi=300 -Tpng -o 1_sbs_rulegraph.png
+snakemake --snakefile 1_sbs.smk --rulegraph | dot -Gdpi=100 -Tpng -o 1_sbs_rulegraph.png
 
 # run workflow
 snakemake --snakefile 1_sbs.smk
